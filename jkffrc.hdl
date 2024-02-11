@@ -1,0 +1,14 @@
+module jkffrc(q,qbar,clk,j,k);
+
+input j,k,clk;
+output q,qbar;
+
+wire n1o;
+wire n20;
+
+n1 nand(n1o, j,clk,qbar);
+n2 nand(n2o, k,clk,q);
+n3 nand(q,qbar,n1o);
+n4 nand(qbar,q,n2o);
+
+endmodule
