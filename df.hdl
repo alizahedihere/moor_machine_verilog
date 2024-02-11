@@ -1,0 +1,7 @@
+module last(input reset, ckl, d, output reg q);
+always@(posedge clk, negedge reset)
+if (~reset)
+	q <= 0;
+else	
+	q <= d;
+endmodule
