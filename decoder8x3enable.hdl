@@ -1,0 +1,22 @@
+module decoder8x3(s,f,i);
+input [0:2]s;
+input i;
+output [0:7]f;
+wire ns0,ns1,ns2,ni;
+wire and0,and1,and2,and3,and4,and5,and6,and7;
+
+not n0(ns0,s[0]);
+not n1(ns1,s[1]);
+not n2(ns2,s[2]);
+not ni0(ni,i);
+
+and and000(f[0],ns2,ns1,ns0,ni);
+and and001(f[1],ns2,ns1,s[0],ni);
+and and010(f[2],ns2,s[1],ns0,ni);
+and and011(f[3],ns2,s[1],s[0],ni);
+and and100(f[4],s[2],ns1,ns0,ni);
+and and101(f[5],s[2],ns1,s[0],ni);
+and and110(f[6],s[2],s[1],ns0,ni);
+and and111(f[7],s[2],s[1],s[0],ni);
+
+endmodule
