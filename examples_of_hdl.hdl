@@ -1,0 +1,243 @@
+آزمایشگاه معماری کامپیوتر کلیه آزمایشها به زبان verilog نوشته شده در نرم افزار active hdl
+از ازمایش شماره یک یعنی نوشتن یک نیم جمع کننده یا همون half adder شروع میشه ودر پایان هم برنامه طراحی یه کامپیوتر ساده بایک alu و دوتا نمایشگر seven segment وچند تا ماژول ضروری رو براتون قرار میدم فقط دوستان توجه کنن که ممکن بعضی برنامه ها به دوصورت نوشته شده باشن مثلا ممکنه half adder رو هم به صورت رفتاری و هم به صورت منطقی براتون گذاشته باشم یه نکته دیگه اینکه تمامی این برنامه ها تست شدن کاملا جواب میدن فقط کافیه نام ماژول رو تو active hdl وارد کنین برنامه رو کپی کنین توش وکامپایل کنین اگه مشکل داشتین بگین تا آموزش مقدماتی active hdl رو هم بذارم براتون
+
+module add (a,b,cin,s,cout);
+ input  a,b,cin;
+ output  s,cout;
+ wire  r,h,w1;
+ halfadder u1(a,b,r,h);
+ halfadder u2(r,cin,s,w1);
+ or u3(cout,w1,h);
+ endmodule
+
+ 
+
+ 
+
+ 
+
+module halfadder(a,b,s,c);
+ input a,b;
+ output s,c;
+ xor u1(s,a,b);
+ and u2(c,a,b);
+ endmodule
+
+ 
+
+ 
+
+ 
+
+module alu(s,a,b,cin,d,cout);
+ input[1:0]s;
+ input [3:0]a,b;
+ input cin;
+ output [3:0]d;
+ output cout;
+ wire [3:0]y;
+mux u1(b0,~b0,1'b0,1'b1,s,y);
+mux u2(b1,~b1,1'b0,1'b1,s,y);
+mux u3(b2,~b2,1'b0,1'b1,s,y);
+mux u4(b3,~b3,1'b0,1'b1,s,y);
+ reg t;
+ always@ (s or a or b)
+  case (s)
+   2'b00:t=b;
+   2'b01:t=~b;
+   2'b10:t=4'b0000;
+   2'b11:t=4'b1111;
+  endcase
+  
+
+  //----------------------------------------------
+   wire c1,c2,c3;
+    add m1(a0,y0,cin,c1,d0);
+    add m2(a1,y1,c1,c2,d1);
+    add m3(a2,y2,c2,c3,d2);
+    add m4(a3,y3,c3,cout,d3);
+ endmodule
+
+ 
+
+ 
+
+ 
+
+ 
+
+module bi_bcd(s,r);
+ input[3:0] s;
+ output[7:0]r;
+ reg[7:0]r;
+ always@(s)
+  if(s==4'b0000)r=8'b00000000;
+  else if(s==4'b0001)r=8'b00000001;
+  else if(s==4'b0010)r=8'b00000010;
+  else if(s==4'b0011)r=8'b00000011;
+  else if(s==4'b0100)r=8'b00000100;
+  else if(s==4'b0101)r=8'b00000101;
+  else if(s==4'b0110)r=8'b00000110;
+  else if(s==4'b0111)r=8'b00000111;
+  else if(s==4'b1000)r=8'b00001000;
+  else if(s==4'b1001)r=8'b00001001;
+  else if(s==4'b1010)r=8'b00010000;
+  else if(s==4'b1011)r=8'b00010001;
+  else if(s==4'b1100)r=8'b00010010;
+  else if(s==4'b1101)r=8'b00010011;
+  else if(s==4'b1110)r=8'b00010100;
+  else if(s==4'b1111)r=8'b00010101;
+  
+ endmodule
+
+ 
+
+ 
+
+ 
+
+
+module fulladder2(a,b,cin,s,cout);
+ input[0:1] a,b;
+ input cin;
+ output[0:1] s ;
+ output cout;
+ wire c;
+   add u1(a[0],b[0],1'b0,s[0],c); 
+   add u2(a[1],b[1],c,s[1],cout);
+ endmodule
+
+ 
+
+ 
+
+ 
+
+
+ module fulladder2b(a,b,cin,s,cout,e);
+ input[0:1] a,b;
+ input e;
+ input cin;
+ output[0:1] s ;
+ output cout;
+ wire c,h1,h2,r;
+   add u1(a[0],b[0],1'b0,h1,c); 
+   add u2(a[1],b[1],c,h2,r);
+   bufif1(s[0],h1,e);
+   bufif1(s[1],h2,e);
+   bufif1(cout,r,e);
+ endmodule
+
+ 
+
+ 
+
+ 
+
+
+ module mux(i0,,i1,i2,i3,s,y);
+  input i0,i1,i2,i3;
+  input [1:0]s;
+  output   y;
+  reg y;
+  always@(i0 or i1 or i2 or i3 or s)
+   case (s)
+    2'b00:y=i0;
+    2'b01:y=i1;
+    2'b10:y=i2;
+    2'b11:y=i3;
+   endcase
+ endmodule
+
+ 
+
+ 
+
+ 
+
+   module  seven_segment_decoder1(s,a,b,c,d,e,f,g);
+         input [3:0]s;
+         output a,b,c,d,e,f,g;
+         reg a,b,c,d,e,f,g;
+         always @ (s[0]or s[1]or s[2] or s[3])
+          begin
+          case({s[0],s[1],s[2],s[3]})
+           4'b0000:{a,b,c,d,e,f,g}=7'b1111110;
+           4'b0001:{a,b,c,d,e,f,g}=7'b0110000;
+           4'b0010:{a,b,c,d,e,f,g}=7'b1101101;
+           4'b0011:{a,b,c,d,e,f,g}=7'b1111001;
+           4'b0100:{a,b,c,d,e,f,g}=7'b0110011;
+           4'b0101:{a,b,c,d,e,f,g}=7'b1011011;
+           4'b0110:{a,b,c,d,e,f,g}=7'b1011111;
+           4'b0111:{a,b,c,d,e,f,g}=7'b1110000;
+           4'b1000:{a,b,c,d,e,f,g}=7'b1111111;
+           4'b1001:{a,b,c,d,e,f,g}=7'b1111011;
+           4'b1010:{a,b,c,d,e,f,g}=7'b1111110;
+           4'b1011:{a,b,c,d,e,f,g}=7'b0011111;
+           4'b1100:{a,b,c,d,e,f,g}=7'b1011110;
+           4'b1101:{a,b,c,d,e,f,g}=7'b0111101;
+           4'b1110:{a,b,c,d,e,f,g}=7'b1001111;
+           4'b1111:{a,b,c,d,e,f,g}=7'b1000111;
+          endcase
+         end
+         endmodule
+
+ 
+
+ 
+
+ 
+
+ 
+
+module shomarandeh4 (inc,dec,a0,a1);
+ input inc,dec,a0;
+ output [3:0]a1;
+ reg[3:0]a1;
+ always@(posedge inc or posedge dec or posedge a0 )
+begin
+ if(a0)
+ a1=4'b0000;
+
+ else if(inc)
+    a1=a1+1;
+
+  
+
+  end
+ endmodule
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+module registr(a0,a1,a2,a3,c,e,s0,s1,s2,s3);
+ input a0,a1,a2,a3;
+ input c;
+ input e;
+ 
+output   s0,s1,s2,s3;
+ reg   b0,b1,b2,b3;
+ always@(c)
+    begin
+    if (c==1)
+   begin
+     b0=a0;
+     b1=a1 ;
+     b2=a2 ;
+     b3=a3 ;
+    end
+ end   
+   
+ bufif1 (s0,b0,e);
+ bufif1 (s1,b1,e);
+ bufif1 (s2,b2,e);
+ bufif1 (s3,b3,e);
+
+                                                              
+ endmodule
