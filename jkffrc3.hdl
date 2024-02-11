@@ -1,0 +1,11 @@
+module jkffrc(input d,clk, output q,qbar);
+
+wire n1o,n20,nd;
+not  not1(nd,d);
+
+nand n1(n1o,d,clk);
+nand n2(n2o,nd,clk);
+
+nand n3(q,n1o,qbar);
+nand n4(qbar,n2o,q);
+endmodule 
