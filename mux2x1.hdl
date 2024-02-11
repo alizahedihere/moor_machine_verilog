@@ -1,0 +1,30 @@
+-----------------// gate mux 2x1 
+module vending(output y,input [1:0]i, s);
+wire n11,i11,i22;
+not n1(ns,s);
+and i1(i11,i[0],s);
+and i2(i22,i[1],ns);
+or orf(y,i11,i22);
+endmodule
+-----------------// table
+primitive vending(output y,input i0,i1, s);
+table
+//i0 i1 s : y;
+0 0 0 : 0;
+0 0 1 : 0;
+0 1 0 : 0;
+0 1 1 : 1;
+1 0 0 : 1;
+1 0 1 : 0;
+1 1 0 : 1;
+1 1 1 : 1;
+endtable
+endprimitive
+-----------------// case
+module testf(input [1:0]i,s, output reg f);
+always@(i,s)
+case(s)
+	1'b0 : f = i[0];
+	1'b1 : f = i[1];
+endcase
+endmodule
