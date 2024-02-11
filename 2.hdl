@@ -1,0 +1,214 @@
+module test(clk,coin,reset,change,vend_out);
+ 
+input clk,reset;
+input [2:0] coin;
+output reg vend_out;
+output reg [2:0] change;
+ 
+parameter [3:0] idle=4'b0000;
+parameter [2:0]nickle=3'b001;
+parameter [2:0]dime=3'b010;
+parameter [2:0]quarter=3'b011;
+parameter [2:0]nickle_dime=3'b100;
+parameter [2:0]two_dime=3'b101;
+parameter [2:0]quarter_nickle=3'b110;
+parameter [2:0]quarter_dime=3'b111;
+ 
+parameter [3:0]five=4'b0001;
+parameter [3:0]ten=4'b0010;
+parameter [3:0]fifteen=4'b011;
+parameter [3:0]tweenty=4'b0100;
+parameter [3:0]tweenty_five=4'b0101;
+parameter [3:0]thirty=4'b110;
+parameter [3:0]thirty_five=4'b111;
+parameter [3:0]fourty=4'b1000;
+parameter [3:0]fourty_five=4'b1001;
+parameter [3:0]fifty=4'b1010;
+ 
+reg [3:0] state, next_state;
+ 
+ 
+ 
+always@(posedge clk, negedge reset) begin
+if(!reset)
+state<=idle;
+else state<=next_state;
+end
+ 
+always@(coin,state) begin
+ 
+case(state)
+idle: case(coin)
+           nickle:begin
+           next_state= five;
+           change=3'b000;
+           vend_out=1'b0;
+           end
+           dime:begin
+           next_state= ten;
+           change=3'b000;
+           vend_out=1'b0;
+           end
+           quarter:begin
+           next_state= tweenty_five;
+           change=3'b000;
+           vend_out=1'b0;
+           end
+           default:begin
+           next_state=idle;
+           change=3'b000;
+           vend_out=1'b0;
+           end
+           endcase
+five: case(coin)
+            nickle: next_state=ten;
+            dime : next_state=fifteen;
+            quarter : next_state=thirty;
+            default:next_state=nickle;
+            endcase
+ten: case(coin)
+            nickle:next_state=fifteen;
+            dime: next_state=tweenty;
+            quarter:next_state=thirty_five;
+            default:next_state=dime;
+            endcase
+fifteen:case(coin)
+             nickle:next_state=tweenty;
+             dime:next_state=thirty_five;
+             quarter:begin
+                     next_state=idle;
+                     vend_out=1'b1;
+           change=3'b000;
+                     end
+             default:next_state=fifteen;
+             endcase
+tweenty:case(coin)
+             nickle:next_state=tweenty_five;
+             dime:next_state=thirty;
+             quarter:begin
+             next_state=idle;
+             change=nickle;
+             vend_out=1'b1;
+             end
+             default:next_state=tweenty;
+             endcase
+tweenty_five:case(coin)
+                  nickle:next_state=thirty;
+                  dime:next_state=thirty_five;
+                  quarter:begin
+                  next_state=idle;
+                  change=dime;
+                  vend_out=1'b1;
+                  end
+                  default:next_state=tweenty_five;
+                  endcase
+thirty:case(coin)
+            nickle:begin
+            next_state=thirty_five;
+            change=3'b000;
+            vend_out=1'b0;
+            end
+            dime:begin
+            next_state=idle;
+            vend_out=1'b1;
+            change=3'b000;
+            end
+            quarter:begin
+            next_state=idle;
+            change=nickle_dime;
+            vend_out=1'b1;
+            end
+            default:next_state=thirty;
+            endcase
+thirty_five:case(coin)
+                 nickle:begin
+                 next_state=idle;
+                 vend_out=1'b1;
+                 change=3'b000;
+                 end
+                 dime:begin
+                 next_state=idle;
+                 change=nickle;
+                 vend_out=1'b1;
+                 end
+                 quarter:begin
+                 next_state=idle;
+                 change=two_dime;
+                 vend_out=1'b1;
+                 end
+                 default:next_state=thirty_five;
+                 endcase
+fourty:case(coin)
+            nickle:begin
+            next_state=idle;
+            change=nickle;
+            vend_out=1'b1;  
+            end
+            dime:begin
+            next_state=idle;
+            change=dime;
+            vend_out=1'b1;
+            end
+            quarter:begin
+            next_state=idle;
+            change=quarter;
+            vend_out=1'b1;
+            end
+            default:begin
+            next_state=idle;
+            vend_out=1'b1;
+            change=3'b000;
+            end
+            endcase
+fourty_five:case(coin)
+            nickle:begin
+            next_state=idle;
+            change=dime;
+            vend_out=1'b1;  
+            end
+            dime:begin
+            next_state=idle;
+            change=nickle_dime;
+            vend_out=1'b1;
+            end
+            quarter:begin
+            next_state=idle;
+            change=quarter_nickle;
+            vend_out=1'b1;
+            end
+            default:begin
+            next_state=idle;
+            change=nickle;
+            vend_out=1'b1;
+            end
+            endcase
+fifty:case(coin)
+            nickle:begin
+            next_state=idle;
+            change=nickle_dime;
+            vend_out=1'b1;  
+            end
+            dime:begin
+            next_state=idle;
+            change=two_dime;
+            vend_out=1'b1;
+            end
+            quarter:begin
+            next_state=idle;
+            change=quarter_dime;
+            vend_out=1'b1;
+            end
+            default:begin
+            next_state=idle;
+            change=dime;
+            vend_out=1'b1;
+            end
+            endcase
+default:begin
+next_state=idle;
+change=3'b000;
+vend_out=1'b0;
+end
+endcase 
+end                                                           
+endmodule
