@@ -1,0 +1,50 @@
+module new(s,f);
+input [2:0]s;
+output reg [7:0]f;
+always @(*)
+case(s)
+	3'b000 : f = 8'b00000001;
+	3'b001 : f = 8'b00000010;
+	3'b010 : f = 8'b00000100;
+	3'b011 : f = 8'b00001000;
+	3'b100 : f = 8'b00010000;
+	3'b101 : f = 8'b00100000;
+	3'b110 : f = 8'b01000000;
+	3'b111 : f = 8'b10000000;
+endcase
+endmodule
+
+decoder 3*8
+-----------------------------
+module new(i,s,f);
+input [2:0]s;
+input i;
+output [7:0]f;
+wire ns0,ns1,ns2,ni;
+wire and0,and1,and2,and3,and4,and5,and6,and7;
+wire and00,and11,and22,and33,and44,and55,and66,and77;
+
+not nots0(ns0,s[0]);
+not nots1(ns1,s[1]);
+not nots2(ns2,s[2]);
+not ni1(ni,i);
+
+and and000(and0,s[0],s[1],s[0]);
+and and001(and1,s[0],s[1],ns0);
+and and010(and2,s[0],ns1,s[0]);
+and and011(and3,s[0],ns1,sn0);
+and and100(and4,ns2,s[1],s[0]);
+and and101(and5,ns2,s[1],ns0);
+and and111(and6,ns2,ns1,ns0);
+
+and and0000(f[0],and0,ni);
+and and0001(f[1],and1,ni);
+and and0002(f[2],and2,ni);
+and and0003(f[3],and3,ni);
+and and0004(f[4],and4,ni);
+and and0005(f[5],and5,ni);
+and and0006(f[6],and6,ni);
+and and0007(f[7],and7,ni);
+
+
+endmodule
