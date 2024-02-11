@@ -1,0 +1,23 @@
+module testf(output reg f, input [3:0]i, input [1:0]s);
+always@(i,s)
+case(s)
+	2'b00 : f = i[0];
+	2'b01 : f = i[1];
+	2'b10 : f = i[2];
+	2'b11 : f = i[3];
+endcase
+endmodule
+================= //gate
+module testf(input [3:0]i, input [1:0]s, output f);
+wire ns0,ns1;
+wire andi0,andi1,andi2,andi3;
+not n0(ns0,s[0]);
+not n1(ns1,s[1]);
+
+and and0(andi0,i[0],ns1,ns0);
+and and1(andi1,i[1],ns1,s[0]);
+and and2(andi2,i[0],s[1],ns0);
+and and3(andi3,i[0],s[1],s[0]);
+
+or or1(f,andi0,andi1,andi2,andi3);
+endmodule
