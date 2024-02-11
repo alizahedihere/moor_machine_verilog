@@ -1,0 +1,27 @@
+module test1(input xin,clk,reset, output [1:0]outt);
+reg [1:0]state;
+parameter s0=2'b00,s1=2'b01,s2=2'b10,s3=2'b11;
+always @(posedge clk,negedge reset)
+if (reset == 0)
+	state <= s0;
+else
+	case(state)
+		s0: if (~xin)
+				state <= s1;
+			else
+				state <= s0;
+		s1: if (~xin)
+				state <= s3;
+			else
+				state <= s2;
+		s2: if (~xin)
+				state <= s3;
+			else
+				state <= s2;
+		s3: if (~xin)
+				state <= s0;
+			else
+				state <= s3;
+endcase
+assign outt = state;
+endmodule 
