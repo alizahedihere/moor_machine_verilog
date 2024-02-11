@@ -1,0 +1,103 @@
+module vending(quarter, nickel, dime, clk, reset, current_state, next_state, out_count, give_soda);
+input quarter, nickel, dime,clk, reset;
+output [3:0] current_state; 
+output next_state, out_count, give_soda;
+reg current_state, out_count, next_state, give_soda;
+parameter cent0 = 0, cent5= 1, cent10 = 2, cent15=3, cent20 =4, cent25 =5, cent30=6,cent35=7,cent40=8, cent45=9, cent50=10;
+parameter give_cent5 = 11, give_cent10 = 12, give_cent15 = 13, give_cent20 = 14;
+
+always @(posedge clk or negedge reset)
+    if(!reset)
+        current_state = cent0;
+    else
+        current_state = next_state;	
+
+always @(nickel or dime or quarter)
+	case(current_state)
+		cent0:
+			if(nickel)  
+                next_state = cent5;
+            else if(dime)
+                next_state = cent10;
+            else if(quarter)
+                next_state = cent25;   
+        cent5: 
+            if(nickel)  
+                next_state = cent10;
+            else if(dime)
+                next_state = cent15;
+            else if(quarter)
+                next_state = cent30;
+        cent10: 
+            if(nickel)  
+                next_state = cent15;
+            else if(dime)
+                next_state = cent20;
+            else if(quarter)
+                next_state = cent35;
+        cent15: 
+            if(nickel)  
+                next_state = cent20;
+            else if(dime)
+                next_state = cent25;
+            else if(quarter)
+                next_state = cent40;
+        cent20:
+            if(nickel)  
+                next_state = cent25;
+            else if(dime)
+                next_state = cent30;
+            else if(quarter)
+                next_state = cent45;
+        cent25:
+            if(nickel)  
+                next_state = cent30;
+            else if(dime)
+                next_state = cent35;
+            else if(quarter)
+                next_state = cent50;
+        cent30:
+				give_soda = 1;
+        cent35:
+				begin
+            next_state = give_cent5;
+            give_soda = 1;
+				end
+			cent40:
+				begin
+				next_state = give_cent10;
+            give_soda = 1;
+				end
+		cent45:
+				begin
+				next_state = give_cent15;
+            give_soda = 1;
+				end
+		cent50:
+				begin
+				next_state = give_cent20;
+            give_soda = 1;
+				end
+		give_cent5:
+				begin
+				next_state = cent0;
+				out_count = nickel;
+				end
+		give_cent10:
+				begin
+				next_state = cent0;
+				out_count = dime;
+				end
+		give_cent15:
+				begin
+				next_state = give_cent5;
+				out_count = dime;
+				end
+		give_cent20:
+				begin
+				next_state = give_cent10;
+            out_count = dime;	
+				end
+        default: next_state = current_state;
+    endcase
+endmodule
