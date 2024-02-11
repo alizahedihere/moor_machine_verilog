@@ -1,0 +1,191 @@
+module shift_reg  #(parameter MSB=8) (  input d,                      // Declare input for data to the first flop in the shift register
+                                        input clk,                    // Declare input for clock to all flops in the shift register
+                                        input en,                     // Declare input for enable to switch the shift register on/off
+                                        input dir,                    // Declare input to shift in either left or right direction
+                                        input rstn,                   // Declare input to reset the register to a default value
+                                        output reg [MSB-1:0] out);    // Declare output to read out the current value of all flops in this register
+
+
+   // This always block will "always" be triggered on the rising edge of clock
+   // Once it enters the block, it will first check to see if reset is 0 and if yes then reset register
+   // If no, then check to see if the shift register is enabled
+   // If no => maintain previous output. If yes, then shift based on the requested direction
+   always @ (posedge clk)
+      if (!rstn)
+         out <= 0;
+      else begin
+         if (en)
+            case (dir)
+               0 :  out <= {out[MSB-2:0], d};
+               1 :  out <= {d, out[MSB-1:1]};
+            endcase
+         else
+            out <= out;
+      end
+endmodule
+-----------------------------------
+module shift4mod(R, L, w, Clock, Q);
+
+input [3:0] R;
+
+input L, w, Clock;
+
+output [3:0] Q;
+
+reg [3:0] Q;
+
+always @(posedge Clock)
+
+if (L)
+
+Q <= R;
+
+else
+
+begin
+
+Q[0] <= Q[1];
+
+Q[1] <= Q[2];
+
+Q[2] <= Q[3];
+
+Q[3] <= w;
+
+end
+
+endmodule
+----------------------------------
+`timescale 1ns / 1ps
+module universal_shift_register (clr,clk,sel,parin,out);
+input clr,clk;
+input [1:0]sel;
+input [3:0]parin;
+output reg[3:0]out;
+
+always @(posedge clk)
+begin
+
+if(clr)
+out=4'b0000;
+
+else
+begin
+case(sel)
+2'b00: out=out;
+2'b01: out={parin[0],parin[3:1]};
+2'b10: out={parin[2:0],parin[3]};
+2'b11: out=parin;
+endcase
+end
+
+end
+endmodule
+------------------
+S0 S1——&gt; Operation
+
+0 0 ——-&gt; Previous State
+
+0 1 ——-&gt;Shift Right
+
+1 0 ——-&gt; Shift Left
+
+1 1 ——-&gt; Parallel Load
+
+module universal_shift(a,s,clk,p);
+
+input [3:0]a;
+
+input [1:0]s;
+
+input clk;
+
+outpu...' /><meta name='twitter:card' content='summary' /><meta name='twitter:site' content='@Quora' /><meta name='twitter:url' content='https://www.quora.com/Can-anyone-give-me-Verilog-code-for-4-bit-universal-shift-register' /><meta name='twitter:title' content='Can anyone give me Verilog code for 4 bit universal shift register?' /><meta name='twitter:description' content='Answer (1 of 4): This code is a sequential/behavioral verilog code for 4 bit universal shift register
+
+S0 S1——&gt; Operation
+
+0 0 ——-&gt; Previous State
+
+0 1 ——-&gt;Shift Right
+
+1 0 ——-&gt; Shift Left
+
+1 1 ——-&gt; Parallel Load
+
+module universal_shift(a,s,clk,p);
+
+input [3:0]a;
+
+input [1:0]s;
+
+input clk;
+---------------------------------
+Module shift_reg(y,clk,rst,cntrl,in);
+
+Output reg [3:0] y;
+
+Input clk,rst;
+
+Input [3:0] in;
+
+Input [1:0] cntrl;
+
+always@(posedge clk)
+
+Begin
+
+If (rst) y<=0;
+
+Else begin
+
+Case(cntrl)
+
+00: y<=in; // data load;
+
+01: y<=y<<1;
+
+10:y<=y>>1;
+
+Default: y<=x;
+
+end case
+
+End
+
+End
+
+Endmodule
+=----------------------
+module uni_shift_4b(op, clk, rst_a, load, sh_ro_lt_rt, ip);
+output reg [3:0] op;
+input load;
+input [1:0] sh_ro_lt_rt;
+input [3:0] ip;
+input clk, rst_a;
+
+reg [3:0]temp;
+
+always @(posedge clk or posedge rst_a)
+begin
+if (rst_a)
+op = 0;
+else
+case(load)
+1'b1:
+begin //Load Input
+temp = ip;. // op = temp;
+end
+1'b0: //Operation
+case (sh_ro_lt_rt)
+2'b00: op = temp <<1; //Left Shift
+2'b01: op = temp >>1; //Right Shift
+2'b10: op = {temp[2:0],temp[3]};. //Rotate Left
+2'b11: op = {temp[0], temp[3:1]}; //Rotate Right
+
+endcase
+endcase
+
+end
+
+endmodule
+-------------------------------
